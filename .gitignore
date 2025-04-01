@@ -1,0 +1,3 @@
+.env
+build
+lambda_package.zip
