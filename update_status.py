@@ -15,7 +15,10 @@ JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 def send_response(status:int, body:str):
     return {
         "headers": {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST'
         },
         'statusCode': status,
         'body': body
@@ -95,9 +98,9 @@ def update_lead_status(event, context):
         return send_response(500, 'Error updating lead status')
 
 ## SIMPLE OBJECT
-# if __name__ == '__main__':
-#     token = create_jwt({'lead_id':696})
-#     print(f"\n {token} \n")
+if __name__ == '__main__':
+    token = create_jwt({'lead_id':696})
+    print(f"\n {token} \n")
     # req = {
     #     "resource": "/update",
     #     "path": "/update",
