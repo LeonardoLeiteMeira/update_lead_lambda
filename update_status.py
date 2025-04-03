@@ -5,7 +5,6 @@ import os
 import jwt
 from datetime import datetime, timedelta, UTC
 
-
 load_dotenv()
 
 LEADS_NOTION_KEY = os.getenv('LEADS_NOTION_KEY')
@@ -46,6 +45,12 @@ def decode_jwt(token: str):
 def update_lead_status(event, context):
     token = event['queryStringParameters']['token']
     status = event['queryStringParameters']['status']
+    body = json.loads(event['body'])
+
+    feedback = body.get('feedback')
+
+    selections:list = body.get('selections')
+    concated_selections = " - ".join(selections)
 
     token_result = decode_jwt(token)
     if not token_result['is_valid']:
@@ -73,9 +78,39 @@ def update_lead_status(event, context):
 
         page_id = ej['id']
 
-        notion.pages.update(page_id=page_id, properties={'Lead Status': {'status': {'name': status}}})
+        properties = {
+            'Lead Status': {'status': {'name': status}},
+            'Feedback': {
+                'rich_text': [{'type': 'text', 'text': {'content': feedback or ''}}]
+            },
+            'Selections': {
+                'rich_text': [{'type': 'text', 'text': {'content': concated_selections or ''}}]
+            },
+        }
+        notion.pages.update(page_id=page_id, properties=properties)
 
         return send_response(200, "Atualizado com sucesso")
     except Exception as e:
         print(e)
         return send_response(500, 'Error updating lead status')
+
+## SIMPLE OBJECT
+# if __name__ == '__main__':
+#     token = create_jwt({'lead_id':696})
+#     print(f"\n {token} \n")
+    # req = {
+    #     "resource": "/update",
+    #     "path": "/update",
+    #     "httpMethod": "POST",
+    #     "headers": {
+    #         "Content-Type": "application/json"
+    #     },
+    #     "queryStringParameters": {
+    #         "token": token,
+    #         "status": "Accept"
+    #     },
+    #     "body": "{ \"feedback\": \"Meu teste feito aqui\", \"selections\": [\"Item 1\", \"Item 2\"] }",
+    #     "isBase64Encoded": False
+    # }
+    # print(update_lead_status(req, {'isLocal': True}))
+
