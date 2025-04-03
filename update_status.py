@@ -98,9 +98,9 @@ def update_lead_status(event, context):
         return send_response(500, 'Error updating lead status')
 
 ## SIMPLE OBJECT
-if __name__ == '__main__':
-    token = create_jwt({'lead_id':696})
-    print(f"\n {token} \n")
+# if __name__ == '__main__':
+#     token = create_jwt({'lead_id':696})
+#     print(f"\n {token} \n")
     # req = {
     #     "resource": "/update",
     #     "path": "/update",
